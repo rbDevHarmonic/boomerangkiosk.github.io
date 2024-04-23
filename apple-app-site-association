@@ -1,0 +1,32 @@
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request));
+})
+
+
+/**
+ * Respond to the request
+ * @param {Request} request
+ */
+async function handleRequest(request) {
+  let response = new Response(JSON.stringify({
+    "applinks": {
+        "details": [
+          {
+            "appIDs": ["G6KBHRX2W4.DevHarmonic-Softwerks.Boomerang"],
+            "components": [
+              {
+                "/": "/*",
+              }
+            ]
+          }
+        ]
+    },
+    "webcredentials": {
+       "apps": [ "G6KBHRX2W4.DevHarmonic-Softwerks.Boomerang" ]
+    },
+  }), {
+    status: 200
+  });
+  response.headers.set("Content-Type", "application/json");
+  return response;
+}
