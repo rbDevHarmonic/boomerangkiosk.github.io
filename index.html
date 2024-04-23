@@ -1,11 +1,9 @@
 Hello World
 <script type="text/javascript">
   alert("This alert box was called with the onload event");
-// check if the URL contains the OAuth code
-const urlParams = new URLSearchParams(window.location.search);
-const code = urlParams.get('code');
-// If code is present, send it to your backend or perform further actions
-if (code) {
-    console.log('Received OAuth code:', code);
-}
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+  if (code) {
+      console.log('Received OAuth code:', code);
+  }
 </script>
