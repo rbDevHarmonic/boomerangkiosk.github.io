@@ -1,9 +1,53 @@
 Hello World
 <script type="text/javascript">
-  alert("This alert box was called with the onload event");
-  const urlParams = new URLSearchParams(window.location.search);
-  const code = urlParams.get('code');
-  if (code) {
-      console.log('Received OAuth code:', code);
-  }
+  const express = require('express');
+const bodyParser = require('body-parser');
+const request = require('request');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware to parse request bodies
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Route for handling OAuth callback
+app.get('/oauth/callback', (req, res) => {
+    const authorizationCode = req.query.code;
+    if (!authorizationCode) {
+        return res.status(400).send('Authorization code not found');
+    }
+
+    // Make request to Square's token endpoint to exchange authorization code for access token
+    request.post({
+        url: 'https://connect.squareup.com/oauth2/token',
+        form: {
+            client_id: 'sq0idp-mXWqMG6XolHKJo4lAQ-fwA',
+            client_secret: 'sq0csp-or0s0mm0kNzDR9ZmqMPVEO4zseJiYho_8wGRP_QbNc',
+            code: authorizationCode,
+            grant_type: 'authorization_code',
+            redirect_uri: 'https://rbdevharmonic.github.io/boomerangkiosk.github.io'
+        }
+    }, (error, response, body) => {
+        if (error) {
+            console.error('Error exchanging authorization code:', error);
+            return res.status(500).send('Error exchanging authorization code');
+        }
+
+        // Handle response from Square's token endpoint
+        const tokenResponse = JSON.parse(body);
+        const accessToken = tokenResponse.access_token;
+        if (!accessToken) {
+            return res.status(500).send('Access token not found in response');
+        }
+
+        // Send the access token back to the iOS app
+        res.send({ access_token: accessToken });
+    });
+});
+
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
+
 </script>
